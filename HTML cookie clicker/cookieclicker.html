@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" type="image/ico" href="realcookie.png">
+    <title>Cookie Clicker [v.0.12]</title>
+    <style>
+        #restart{
+            position: relative;
+            top:-500px
+        }
+        body {
+            background-image: url('cookieBackground.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+        }
+
+        #cookie-button {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            width: 270px;
+            height: 270px;
+        }
+
+        #clickPower, #cookie-text {
+            text-align: center;
+            font-size: xx-large;
+            color: black;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        #bakerPriceText, #minerPriceText, #engineerPriceText {
+            text-align: center;
+            font-size: 25px;
+            color: black;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        #hireBakerButton, #hireMinerButton, #hireEngineerButton {
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+            width: 170px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <audio id="myAudio" src="buttonsound.mp3" hidden></audio>
+    <p id="clickPower">cookies/second: 0</p>
+    <p id="cookie-text">Cookies: 0</p>
+
+    <!-- Change the "Bake a cookie" button to an image -->
+    <img src="realcookie.png" alt="Bake a cookie" onclick="bakeCookie(); playSound();" style="cursor: pointer" id="cookie-button">
+
+    <!-- Add an ID to the "Hire a baker" button for CSS targeting -->
+    <input type="button" id="hireBakerButton" value="Hire a baker" onclick="hireBaker()">
+    <input type="button" id="hireMinerButton" value="Hire a miner" onclick="hireMiner()">
+    <input type="button" id="hireEngineerButton" value="Hire an Engineer" onclick="hireEngineer()">
+<input type="button" id = "restart" value="Restart Game" onclick="restart()">
+
+    <p id="bakerPriceText">Baker Price: 100</p>
+    <p id="minerPriceText">Miner Price: 500</p>
+    <p id="engineerPriceText">Engineer Price: 1000</p>
+
+    <script>
+        var cookies = 0;
+        var cps = 0;
+        var bakerPrice = 100;
+        var minerPrice = 500;
+        var engineerPrice = 1000;
+
+        // Load the game state from localStorage
+        if (localStorage.getItem('cookieClickerSave')) {
+            var saveData = JSON.parse(localStorage.getItem('cookieClickerSave'));
+            cookies = saveData.cookies;
+            cps = saveData.cps;
+            bakerPrice = saveData.bakerPrice;
+            minerPrice = saveData.minerPrice;
+            engineerPrice = saveData.engineerPrice;
+        }
+
+        function bakeCookie() {
+            const cookiebutton = document.getElementById("cookie-button");
+            cookies += 1;
+            document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+            cookiebutton.style.transform = "scale(0.9)";
+            setTimeout(() => {
+                cookiebutton.style.transform = "scale(1)";
+            }, 500);
+        }
+
+        function hireBaker() {
+            if (cookies >= bakerPrice) {
+                cps += 1;
+                cookies -= bakerPrice;
+                bakerPrice = Math.round(bakerPrice * 1.2);
+                document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+                document.getElementById("bakerPriceText").innerHTML = "Baker Price: " + bakerPrice;
+                document.getElementById("clickPower").innerHTML = "cookies/second: " + cps;
+            } else {
+                alert("Your cookies are running low");
+            }
+        }
+
+        function hireMiner() {
+            if (cookies >= minerPrice) {
+                cps += 5;
+                cookies -= minerPrice;
+                minerPrice = Math.round(minerPrice * 1.2);
+                document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+                document.getElementById("minerPriceText").innerHTML = "Miner Price: " + minerPrice;
+                document.getElementById("clickPower").innerHTML = "cookies/second: " + cps;
+            } else {
+                alert("Your cookies are running low");
+            }
+        }
+
+        function playSound() {
+            var audio = document.getElementById("myAudio");
+            audio.play();
+        }
+
+        function autoClick() {
+            cookies += cps;
+            document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+        }
+
+        function hireEngineer() {
+            if (cookies >= engineerPrice) {
+                cps += 10;
+                cookies -= engineerPrice;
+                engineerPrice = Math.round(engineerPrice * 1.2);
+                document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+                document.getElementById("engineerPriceText").innerHTML = "Engineer Price: " + engineerPrice;
+                document.getElementById("clickPower").innerHTML = "cookies/second: " + cps;
+            } else {
+                alert("Your cookies are running low");
+            }
+        }
+        function restart()
+        {
+            cookies = 0;
+            document.getElementById("cookie-text").innerHTML = "Cookies: "+cookies;
+            bakerPrice = 100;
+            minerPrice = 500;
+            engineerPrice = 1000;
+            cps = 0;
+            document.getElementById("engineerPriceText").innerHTML = "Engineer Price: "+ engineerPrice;
+            document.getElementById("bakerPriceText").innerHTML = "Baker Price: "+ bakerPrice;
+            document.getElementById("minerPriceText").innerHTML = "Miner Price: "+ minerPrice;
+            document.getElementById("clickPower").innerHTML = "cookies/second: "+cps;
+        }
+
+        // Save the game state to localStorage
+        function saveGame() {
+            var saveData = {
+                cookies: cookies,
+                cps: cps,
+                bakerPrice: bakerPrice,
+                minerPrice: minerPrice,
+                engineerPrice: engineerPrice
+            };
+            localStorage.setItem('cookieClickerSave', JSON.stringify(saveData));
+        }
+
+        // Call the saveGame function at a regular interval
+        setInterval(saveGame, 5000); // Save every 5 seconds
+
+        // Automatically click every second
+        setInterval(autoClick, 1000);
+
+        // Load initial values to the HTML elements
+        document.getElementById("cookie-text").innerHTML = "Cookies: " + cookies;
+        document.getElementById("bakerPriceText").innerHTML = "Baker Price: " + bakerPrice;
+        document.getElementById("minerPriceText").innerHTML = "Miner Price: " + minerPrice;
+        document.getElementById("engineerPriceText").innerHTML = "Engineer Price: " + engineerPrice;
+        document.getElementById("clickPower").innerHTML = "cookies/second: " + cps;
+    </script>
+</body>
+</html>
